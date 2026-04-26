@@ -1,5 +1,7 @@
 # Helm Upgrade with set option
 
+> See [Helm Upgrades and Revisions concept doc](concepts/upgrade-and-revisions.md) for a deeper explanation of what `helm upgrade` actually does, why revisions are immutable, where they're stored, and how `--set` interacts with values files.
+
 ## Step-01: Introduction
 
 - We are going to upgrade the HELM RELEASE using `helm upgrade` command in combination with `--set "image.tag=<DOCKER-IMAGE-TAGS>`
@@ -105,14 +107,14 @@ Observation: Version 2 of application should be displayed
 
 ```t
 # Helm Upgrade to 3.0.0
-helm upgrade myapp1 kalyan-repo/myapp1 --set "image.tag=3.0.0"
+helm upgrade myapp1 stacksimplify/myapp1 --set "image.tag=3.0.0"
 
 # Access Application
 http://localhost:<NODE-PORT>
 http://localhost:31231
 
 # Helm Upgrade to 4.0.0
-helm upgrade myapp1 kalyan-repo/myapp1 --set "image.tag=4.0.0"
+helm upgrade myapp1 stacksimplify/myapp1 --set "image.tag=4.0.0"
 
 # Access Application
 http://localhost:<NODE-PORT>
