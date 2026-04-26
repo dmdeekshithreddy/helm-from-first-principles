@@ -90,20 +90,36 @@ helm list -n default
 kubectl get pods
 
 # List Kubernetes deployments
-
+kubectl get deployments
 
 # List Kubernetes Services
 kubectl get svc
 Observation: Review the EXTERNAL-IP field and you will see it as localhost. Access the nginx page from local desktop localhost
 
-# Access Nginx Application on local desktop browser
+# Access Nginx Application using EXTERNAL-IP
+http://<EXTERNAL-IP>:80
+
+# In case of kind, EXTERNAL-IP will be <pending> and you won't be able to access the nginx page using EXTERNAL-IP. You can use port-forwarding to access the nginx page in case of kind.
+kubectl port-forward svc/mynginx 8080:80
+
+# Access Nginx Application on local desktop browser (only applicable for Docker Desktop's Kubernetes)
 http://localhost:80
 http://127.0.0.1:80
 
-# Access Application using curl command
+# Access Application using curl command from local desktop terminal (only applicable for Docker Desktop's Kubernetes)
 curl http://localhost:80
 curl http://127.0.0.1:80
 ```
+
+> **Note: `EXTERNAL-IP: localhost` only applies to Docker Desktop's Kubernetes, not to `kind`.**
+>
+> Docker Desktop ships a built-in service-LoadBalancer integration that maps `LoadBalancer` services to your host's `localhost`, so the `EXTERNAL-IP` resolves and the nginx page is reachable at `http://localhost:80` out of the box.
+>
+> On `kind` (Kubernetes IN Docker), there is no built-in load balancer. A `LoadBalancer` service will sit in `<pending>` for `EXTERNAL-IP` indefinitely. To reach the app on a kind cluster, use one of:
+>
+> - `kubectl port-forward svc/mynginx-nginx 8080:80` then browse `http://localhost:8080`
+> - Install [MetalLB](https://kind.sigs.k8s.io/docs/user/loadbalancer/) inside the kind cluster to get real `LoadBalancer` IPs
+> - Use a `NodePort` service and hit the kind node's mapped port
 
 ## Step-06: Uninstall Helm Release - NO FLAGS
 
@@ -114,4 +130,15 @@ helm ls
 # Uninstall Helm Release
 helm uninstall <RELEASE-NAME>
 helm uninstall mynginx
+```
+
+## Step-07: Verify kubectl resources after Helm Uninstall
+
+```bash
+# List Kubernetes Pods
+kubectl get pods
+# List Kubernetes deployments
+kubectl get deployments
+# List Kubernetes Services
+kubectl get svc
 ```
