@@ -17,7 +17,7 @@ nodes:
 EOF
 
 # create a cluster with a config file
-kind create cluster --name helm-practice --config kind-config.yaml
+kind create cluster --name helm-practice --config ~/helm-practice/kind-config.yaml
 
 # check cluster status
 kind get clusters
