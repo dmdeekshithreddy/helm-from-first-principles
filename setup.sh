@@ -28,6 +28,14 @@ kubectl get nodes
 ## Helm is a package manager for Kubernetes that helps you manage Kubernetes applications.
 brew install helm
 
+# Stop the cluster when you are done
+docker stop $(docker ps --filter "label=io.x-k8s.kind.cluster" -q)
+## or
+docker stop $(kind get nodes --name=helm-practice -o name)
 
+# Start the cluster again
+docker start $(docker ps -a --filter "label=io.x-k8s.kind.cluster" -q)
+## or
+docker start $(kind get nodes --name=helm-practice -o name)
 
 
