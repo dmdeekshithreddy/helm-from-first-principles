@@ -37,6 +37,24 @@ helm search repo wildfly
 helm seach repo nginx --version 23.0.3
 ```
 
+> **Where Helm stores repo metadata locally (macOS)**
+>
+> Helm splits its local state across two top-level directories — config and cache. On macOS the paths follow Apple's conventions; on Linux they follow the XDG spec.
+>
+> **Config (the source of truth — what repos you've added):**
+>
+> - `~/Library/Preferences/helm/repositories.yaml` — the registry of repos you've added with `helm repo add` (name + URL + auth). This is what `helm repo list` reads. Edit it by hand only if you know what you're doing; prefer `helm repo add/remove`.
+> - `~/Library/Preferences/helm/repositories.lock` — a file lock Helm grabs while mutating `repositories.yaml`, so concurrent `helm repo add` calls don't corrupt the file. You shouldn't need to touch it; if it's left behind by a crashed process and Helm complains, deleting it is safe.
+>
+> **Cache (regenerable — what `helm repo update` refreshes):**
+>
+> - `~/Library/Caches/helm/repository/<repo>-index.yaml` — the full chart index pulled from the repo's `index.yaml`. Every chart, every version, with download URLs, digests, and metadata. This is what `helm search repo` and `helm install` consult to resolve charts and versions. Stale until you run `helm repo update`.
+> - `~/Library/Caches/helm/repository/<repo>-charts.txt` — a flat newline-separated list of chart names derived from the index, used to speed up search/tab-completion.
+>
+> Linux equivalents: `~/.config/helm/` for config and `~/.cache/helm/` for cache. Override with `$HELM_CONFIG_HOME` / `$HELM_CACHE_HOME`. Run `helm env` to see the resolved paths on your machine.
+>
+> Practical implication: deleting the cache directory is harmless — `helm repo update` rebuilds it. Deleting the config directory wipes your repo list.
+
 ## Step-03: Install Helm Chart
 
 - Installs the Helm Chart
@@ -56,8 +74,8 @@ helm install mynginx mybitnami/nginx
 >
 > `helm repo update` refreshes the local cache of chart metadata from all the Helm repos you've added (via `helm repo add`), so `helm search` and `helm install` see the latest available chart versions.
 >
-> - `apt update` → refreshes package lists from configured APT sources (`/etc/apt/sources.list`)
-> - `helm repo update` → refreshes chart indexes from configured Helm repos (`~/.config/helm/repositories.yaml`)
+> - `apt update` → refreshes package lists from configured APT sources (`/etc/apt/sources.list`) into `/var/lib/apt/lists/`
+> - `helm repo update` → refreshes chart indexes from the repos listed in `repositories.yaml` (macOS: `~/Library/Preferences/helm/repositories.yaml`, Linux: `~/.config/helm/repositories.yaml`) into the cache directory (macOS: `~/Library/Caches/helm/repository/`, Linux: `~/.cache/helm/repository/`)
 >
 > Neither command installs or upgrades anything — they just sync metadata. The Helm equivalent of `apt upgrade` would be `helm upgrade <release>` (per release, not bulk).
 >
